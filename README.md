@@ -1,6 +1,6 @@
-#G6502PP
+# G6502PP
 
-##The most cursed 6502 emulator yet.
+## The most cursed 6502 emulator yet.
 
 The C++ port of SixPhphive02 converted to Go... Almost.
 
