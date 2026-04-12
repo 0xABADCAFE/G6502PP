@@ -582,6 +582,60 @@ func (cpu *MOS6502) Run() *MOS6502 {
             dispatch()
         }
 
+        // Increment
+        handle(INX) {
+            iXIndex++
+            updateNZ(iXIndex)
+            size(INX)
+            dispatch()
+        }
+
+        handle(INY) {
+            iYIndex++
+            updateNZ(iYIndex)
+            size(INY)
+            dispatch()
+        }
+
+        handle(INC_ZP) {
+            // load() sets iAddress            
+            load(zp(), iData)
+            iData++
+            updateNZ(iData);
+            writeByte(iAddress, iData)
+            size(INC_ZP)
+            dispatch()
+        }
+
+        handle(INC_ZPX) {
+            // load() sets iAddress            
+            load(zpx(), iData)
+            iData++
+            updateNZ(iData)
+            writeByte(iAddress, iData)
+            size(INC_ZPX)
+            dispatch()
+        }
+
+        handle(INC_AB) {
+            // load() sets iAddress            
+            load(ab(), iData)
+            iData++
+            updateNZ(iData)
+            writeByte(iAddress, iData)
+            size(INC_AB)
+            dispatch()
+        }
+
+        handle(INC_ABX) {
+            // load() sets iAddress            
+            load(abx(), iData)
+            iData++
+            updateNZ(iData)
+            writeByte(iAddress, iData)
+            size(INC_ABX)
+            dispatch()
+        }
 
 	    case 0x03: fallthrough
 	    case 0x13: fallthrough
