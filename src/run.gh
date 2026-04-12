@@ -338,7 +338,7 @@ func (cpu *MOS6502) Run() *MOS6502 {
             if 0 == iStatus & F_CARRY {
                 branch()
             } else {
-                size(SIZE_BRANCH)
+                size(BCC)
             }
             dispatch()
         }
@@ -347,7 +347,7 @@ func (cpu *MOS6502) Run() *MOS6502 {
             if F_CARRY == iStatus & F_CARRY {
                 branch()
             } else {
-                size(SIZE_BRANCH)
+                size(BCS)
             }
             dispatch()
         }
@@ -356,7 +356,7 @@ func (cpu *MOS6502) Run() *MOS6502 {
             if F_ZERO == iStatus & F_ZERO {
                 branch()
             } else {
-                size(SIZE_BRANCH)
+                size(BEQ)
             }
             dispatch()
         }
@@ -365,7 +365,7 @@ func (cpu *MOS6502) Run() *MOS6502 {
             if 0 == iStatus & F_ZERO {
                 branch()
             } else {
-                size(SIZE_BRANCH)
+                size(BNE)
             }
             dispatch()
         }
@@ -374,7 +374,7 @@ func (cpu *MOS6502) Run() *MOS6502 {
             if F_NEGATIVE == iStatus & F_NEGATIVE {
                 branch()
             } else {
-                size(SIZE_BRANCH)
+                size(BMI)
             }
             dispatch()
         }
@@ -383,7 +383,7 @@ func (cpu *MOS6502) Run() *MOS6502 {
             if 0 == iStatus & F_NEGATIVE {
                 branch()
             } else {
-                size(SIZE_BRANCH)
+                size(BPL)
             }
             dispatch()
         }
@@ -392,7 +392,7 @@ func (cpu *MOS6502) Run() *MOS6502 {
             if 0 == iStatus & F_OVERFLOW {
                 branch()
             } else {
-                size(SIZE_BRANCH)
+                size(BVC)
             }
             dispatch()
         }
@@ -401,16 +401,101 @@ func (cpu *MOS6502) Run() *MOS6502 {
             if F_OVERFLOW == iStatus & F_OVERFLOW {
                 branch()
             } else {
-                size(SIZE_BRANCH)
+                size(BVS)
             }
             dispatch()
         }
 
-                
 	    handle(NOP) {
             size(NOP)
             dispatch()
 	    }
+
+        // Status mangling
+        handle(CLC) {
+            iStatus &= ^F_CARRY
+            size(CLC)
+            dispatch()
+        }
+
+        handle(CLD) {
+            iStatus &= ^F_DECIMAL
+            size(CLD)
+            dispatch()
+        }
+
+        handle(CLI) {
+            iStatus &= ^F_INTERRUPT
+            size(CLI)
+            dispatch()
+        }
+
+        handle(CLV) {
+            iStatus &= ^F_OVERFLOW
+            size(CLV)
+            dispatch()
+        }
+
+        handle(SEC) {
+            iStatus |= F_CARRY
+            size(SEC)
+            dispatch()
+        }
+
+        handle(SED) {
+            iStatus |= F_DECIMAL
+            size(SED)
+            dispatch()
+        }
+
+        handle(SEI) {
+            iStatus |= F_INTERRUPT
+            size(SEI)
+            dispatch()
+        }
+
+        // Register transfer
+        handle(TAX) {
+            iXIndex = iAccumulator
+            updateNZ(iXIndex)
+            size(TAX)
+            dispatch()
+        }
+
+        handle(TAY) {
+            iYIndex = iAccumulator
+            updateNZ(iYIndex);
+            size(TAY)
+            dispatch()
+        }
+
+        handle(TSX) {
+            iXIndex = iStackPointer
+            updateNZ(iXIndex)
+            size(TSX)
+            dispatch()
+        }
+
+        handle(TXA) {
+            iAccumulator = iXIndex
+            updateNZ(iAccumulator)
+            size(TXA)
+            dispatch()
+        }
+
+        // klausd tests: TXS does not update NZ
+        handle(TXS) {
+            iStackPointer = iXIndex
+            size(TXS)
+            dispatch()
+        }
+
+        handle(TYA) {
+            iAccumulator = iYIndex
+            updateNZ(iAccumulator)
+            size(TYA)
+            dispatch()
+        }
 
 	    case 0x03: fallthrough
 	    case 0x13: fallthrough
