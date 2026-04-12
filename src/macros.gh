@@ -1,0 +1,86 @@
+#ifndef _MACROS_GH_
+#   define _MACROS_GH_
+
+/**
+ * You are ruining my beautiful language!
+ */
+
+#   define readByte(addr) (*(*Byte)(unsafe.Pointer(uintptr(pOutside) + uintptr(addr))))
+#   define writeByte(addr, val) *(*Byte)(unsafe.Pointer(uintptr(pOutside) + uintptr(addr))) = (Byte)(val)
+#   define readWord(addr) (Word(readByte(addr)) | (Word(readByte(addr + 1)) << 8))
+#   define readWordZP(addr) (Word(readByte(addr)) | (Word(readByte((addr + 1) & 0xFF)) << 8))
+
+// Addressing. Better hope common subexpression elimination works
+
+#   define im() { iAddress = iProgramCounter +1 }
+
+/**
+ * $NN
+ */
+#   define zp() { iAddress = Address(readByte(iProgramCounter + 1)) }
+
+/**
+ * $NNNN
+ */
+#   define ab() { iAddress = Address(readWord(iProgramCounter + 1)) }
+
+/**
+ * $NNNN,X
+ */
+#   define abx() { iAddress = Address(readWord(iProgramCounter + 1)) + Address(iXIndex) }
+
+/**
+ * $NNNN,Y
+ */
+#   define aby() { iAddress = Address(readWord(iProgramCounter + 1)) + Address(iYIndex) }
+
+/**
+ * $NN,X (wraps in zero page)
+ */
+#   define zpx() { iAddress = Address (readByte(iProgramCounter + 1) + iXIndex) }
+
+/**
+ * $NN,Y (wraps in zero page)
+ */
+#   define zpy() { iAddress = Address (readByte(iProgramCounter + 1) + iYIndex) }
+
+/**
+ * ($NN,X) (wraps in zero page)
+ */
+#   define ix() { iAddress = (Address(readByte(iProgramCounter + 1)) + Address(iXIndex)) & 0xFF; iAddress = readWordZP(iAddress) }
+
+/**
+ * ($NN),Y
+ */
+#define iy() { iAddress = Address(readByte(iProgramCounter + 1)); iAddress = Address(readWordZP(iAddress)) + Address(iYIndex); }
+
+#   define begin() Interpreter: for { switch readByte(iProgramCounter)
+#   define done() }
+#   define handle(NAME) case NAME: 
+#   define dispatch()   continue
+#   define size(NAME) iProgramCounter += SIZE_##NAME
+#   define illegal() default: break Interpreter
+
+#   define load(mode, target)  { mode; target = readByte(iAddress) }
+#   define store(mode, source) { mode; writeByte(iAddress, source) }
+
+// ALU
+
+#define updateNZ(value) { \
+    iStatus &= F_CLR_NZ; \
+    if (value) == 0 { \
+        iStatus |= F_ZERO \
+    } else { \
+        iStatus |= (value & F_NEGATIVE) \
+    } \
+}
+
+#define cmpByte(iTo, iValue) { \
+    iRes := iTo - iValue; \
+    iStatus &= F_CLR_NZC; \
+    if iRes == 0 { iStatus |= F_ZERO } \
+    iStatus |= (iRes & F_NEGATIVE); \
+    if iTo >= iValue { iStatus |= F_CARRY } \
+}
+
+#endif

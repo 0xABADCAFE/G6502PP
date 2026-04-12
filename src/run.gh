@@ -1,0 +1,323 @@
+#ifndef _RUN_GH_
+#   define _RUN_GH_
+#   include "macros.gh"
+
+/**
+ * You are ruining my beautiful language!
+ */
+func (cpu *MOS6502) Run() *MOS6502 {
+
+    // Pin all the things
+    pOutside := cpu.pOutside
+    iProgramCounter := cpu.iProgramCounter
+    iAccumulator := cpu.iAccumulator
+    iStatus := cpu.iStatus
+    iXIndex := cpu.iXIndex
+    iYIndex := cpu.iYIndex
+    iStackPointer := cpu.iStackPointer
+
+    var iAddress Address // The virtual Address Bus
+    //var iValue   Byte    // The virtual Data Bus
+    begin() {
+    
+        // Load Accumulator
+        handle(LDA_IM) {
+            load(im(), iAccumulator)
+            updateNZ(iAccumulator)
+            size(LDA_IM)
+            dispatch()
+        }
+
+        handle(LDA_ZP) {
+            load(zp(), iAccumulator)
+            updateNZ(iAccumulator)
+            size(LDA_ZP)
+            dispatch()
+        }
+
+        handle(LDA_ZPX) {
+            load(zpx(), iAccumulator)
+            updateNZ(iAccumulator) 
+            size(LDA_ZPX)
+            dispatch()
+        }
+
+        handle(LDA_AB) {
+            load(ab(), iAccumulator)
+            updateNZ(iAccumulator)
+            size(LDA_AB)
+            dispatch()
+        }
+
+        handle(LDA_ABX) {
+            load(abx(), iAccumulator)
+            updateNZ(iAccumulator)
+            size(LDA_ABX)
+            dispatch()
+        }
+
+        handle(LDA_ABY) {
+            load(aby(), iAccumulator)
+            updateNZ(iAccumulator)
+            size(LDA_ABY)
+            dispatch()
+        }
+
+        handle(LDA_IX) {
+            load(ix(), iAccumulator)
+            updateNZ(iAccumulator)
+            size(LDA_IX)
+            dispatch()
+        }
+
+        handle(LDA_IY) {
+            load(iy(), iAccumulator)
+            updateNZ(iAccumulator)
+            size(LDA_IY)
+            dispatch()
+        }
+
+
+        // Store Accumulator
+        handle(STA_ZP) {
+            store(zp(),  iAccumulator);
+            size(STA_ZP);
+            dispatch();
+        }
+
+        handle(STA_ZPX) {
+            store(zpx(), iAccumulator);
+            size(STA_ZPX);
+            dispatch();
+        }
+
+        handle(STA_AB) {
+            store(ab(),  iAccumulator);
+            size(STA_AB);
+            dispatch();
+        }
+
+        handle(STA_ABX) {
+            store(abx(), iAccumulator);
+            size(STA_ABX);
+            dispatch();
+        }
+
+        handle(STA_ABY) {
+            store(aby(), iAccumulator);
+            size(STA_ABY);
+            dispatch();
+        }
+
+        handle(STA_IX) {
+            store(ix(),  iAccumulator);
+            size(STA_IX);
+            dispatch();
+        }
+
+        handle(STA_IY) {
+            store(iy(), iAccumulator);
+            size(STA_IY);
+            dispatch();
+        }
+
+        // Load X
+        handle(LDX_IM) {
+            load(im(), iXIndex)
+            updateNZ(iXIndex) 
+            size(LDX_IM);
+            dispatch();
+        }
+
+        handle(LDX_ZP) {
+            load(zp(), iXIndex)
+            updateNZ(iXIndex);
+            size(LDX_ZP);
+            dispatch();
+        }
+
+        handle(LDX_ZPY) {
+            load(zpy(), iXIndex)
+            updateNZ(iXIndex)
+            size(LDX_ZPY);
+            dispatch();
+        }
+
+        handle(LDX_AB) {
+            load(ab(), iXIndex);
+            updateNZ(iXIndex);
+            size(LDX_AB);
+            dispatch();
+        }
+
+        handle(LDX_ABY) {
+            load(aby(), iXIndex)
+            updateNZ(iXIndex);
+            size(LDX_ABY);
+            dispatch();
+        }
+
+        // Store X
+        handle(STX_ZP) {
+            store(zp(),  iXIndex);
+            size(STX_ZP);
+            dispatch();
+        }
+
+        handle(STX_ZPY) {
+            store(zpy(), iXIndex);
+            size(STX_ZPY);
+            dispatch();
+        }
+
+        handle(STX_AB) {
+            store(ab(),  iXIndex);
+            size(STX_AB);
+            dispatch();
+        }
+
+        // Load Y
+        handle(LDY_IM) {
+            load(im(), iYIndex)
+            updateNZ(iYIndex);
+            size(LDY_IM);
+            dispatch();
+        }
+
+        handle(LDY_ZP) {
+            load(zp(), iYIndex)
+            updateNZ(iYIndex);
+            size(LDY_ZP);
+            dispatch();
+        }
+
+        handle(LDY_ZPX) {
+            load(zpx(), iYIndex)
+            updateNZ(iYIndex);
+            size(LDY_ZPX);
+            dispatch();
+        }
+
+        handle(LDY_AB) {
+            load(ab(), iYIndex)
+            updateNZ(iYIndex);
+            size(LDY_AB);
+            dispatch();
+        }
+
+        handle(LDY_ABX) {
+            load(abx(), iYIndex)
+            updateNZ(iYIndex);
+            size(LDY_ABX);
+            dispatch();
+        }
+
+        // Store Y
+        handle(STY_ZP) {
+            store(zp(),  iYIndex);
+            size(STY_ZP);
+            dispatch();
+        }
+
+        handle(STY_ZPX) {
+            store(zpx(), iYIndex);
+            size(STY_ZPX);
+            dispatch();
+        }
+
+        handle(STY_AB) {
+            store(ab(),  iYIndex);
+            size(STY_AB);
+            dispatch();
+        }
+
+	    handle(NOP) {
+            size(NOP);
+            dispatch();
+	    }
+	    	    
+	    case 0x03: fallthrough
+	    case 0x13: fallthrough
+	    case 0x23: fallthrough
+	    case 0x33: fallthrough
+	    case 0x43: fallthrough
+	    case 0x53: fallthrough
+	    case 0x63: fallthrough
+	    case 0x73: fallthrough
+	    case 0x83: fallthrough
+	    case 0x93: fallthrough
+	    case 0xA3: fallthrough
+	    case 0xB3: fallthrough
+	    case 0xC3: fallthrough
+	    case 0xD3: fallthrough
+	    case 0xE3: fallthrough
+        case 0xF3: fallthrough
+
+	    case 0x07: fallthrough
+	    case 0x17: fallthrough
+	    case 0x27: fallthrough
+	    case 0x37: fallthrough
+	    case 0x47: fallthrough
+	    case 0x57: fallthrough
+	    case 0x67: fallthrough
+	    case 0x77: fallthrough
+	    case 0x87: fallthrough
+	    case 0x97: fallthrough
+	    case 0xA7: fallthrough
+	    case 0xB7: fallthrough
+	    case 0xC7: fallthrough
+	    case 0xD7: fallthrough
+	    case 0xE7: fallthrough
+        case 0xF7: fallthrough
+
+	    case 0x0B: fallthrough
+	    case 0x1B: fallthrough
+	    case 0x2B: fallthrough
+	    case 0x3B: fallthrough
+	    case 0x4B: fallthrough
+	    case 0x5B: fallthrough
+	    case 0x6B: fallthrough
+	    case 0x7B: fallthrough
+	    case 0x8B: fallthrough
+	    case 0x9B: fallthrough
+	    case 0xAB: fallthrough
+	    case 0xBB: fallthrough
+	    case 0xCB: fallthrough
+	    case 0xDB: fallthrough
+	    case 0xEB: fallthrough
+        case 0xFB: fallthrough
+
+	    case 0x0F: fallthrough
+	    case 0x1F: fallthrough
+	    case 0x2F: fallthrough
+	    case 0x3F: fallthrough
+	    case 0x4F: fallthrough
+	    case 0x5F: fallthrough
+	    case 0x6F: fallthrough
+	    case 0x7F: fallthrough
+	    case 0x8F: fallthrough
+	    case 0x9F: fallthrough
+	    case 0xAF: fallthrough
+	    case 0xBF: fallthrough
+	    case 0xCF: fallthrough
+	    case 0xDF: fallthrough
+	    case 0xEF: fallthrough
+        case 0xFF: fallthrough
+
+
+        illegal();
+    }
+    done()
+
+    // Restore
+    cpu.iProgramCounter = iProgramCounter
+    cpu.iAccumulator = iAccumulator
+    cpu.iStatus = iStatus
+    cpu.iXIndex = iXIndex
+    cpu.iYIndex = iYIndex
+    cpu.iStackPointer = iStackPointer
+    
+    return cpu
+}
+
+#endif
