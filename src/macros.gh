@@ -1,6 +1,28 @@
 #ifndef _MACROS_GH_
 #   define _MACROS_GH_
 
+#   ifdef PIN_ALL
+#       define XREG iXIndex
+#       define YREG iYIndex
+#       define SREG iStackPointer
+#       define pinX() iXIndex := cpu.iXIndex
+#       define pinY() iYIndex := cpu.iYIndex
+#       define pinS() iStackPointer := cpu.iStackPointer
+#       define unpinX() cpu.iXIndex := iXIndex
+#       define unpinY() cpu.iYIndex := iYIndex
+#       define unpinS() cpu.iStackPointer := iStackPointer
+#   else
+#       define XREG cpu.iXIndex
+#       define YREG cpu.iYIndex
+#       define SREG cpu.iStackPointer
+#       define pinX()
+#       define pinY()
+#       define pinS()
+#       define unpinX()
+#       define unpinY()
+#       define unpinS()
+#   endif
+
 /**
  * You are ruining my beautiful language!
  */
@@ -9,9 +31,10 @@
 #   define writeByte(addr, val) *(*Byte)(unsafe.Pointer(uintptr(pOutside) + uintptr(addr))) = (Byte)(val)
 #   define readWord(addr) (Word(readByte(addr)) | (Word(readByte(addr + 1)) << 8))
 #   define readWordZP(addr) (Word(readByte(addr)) | (Word(readByte((addr + 1) & 0xFF)) << 8))
-#   define pull(target) iStackPointer++; target = readByte(STACK_BASE + Address(iStackPointer))
-#   define push(source) writeByte(STACK_BASE + Address(iStackPointer), source); iStackPointer--
+#   define pull(target) SREG++; target = readByte(STACK_BASE + Address(SREG))
+#   define push(source) writeByte(STACK_BASE + Address(SREG), source); SREG--
 #   define branch() iProgramCounter = Address(int16(iProgramCounter) + int16(*(*int8)(unsafe.Pointer(uintptr(pOutside) + uintptr(iProgramCounter + 1))))) + SIZE_BRANCH
+
 
 // Addressing. Better hope common subexpression elimination works
 
@@ -30,32 +53,32 @@
 /**
  * $NNNN,X
  */
-#   define abx() { iAddress = Address(readWord(iProgramCounter + 1)) + Address(iXIndex) }
+#   define abx() { iAddress = Address(readWord(iProgramCounter + 1)) + Address(XREG) }
 
 /**
  * $NNNN,Y
  */
-#   define aby() { iAddress = Address(readWord(iProgramCounter + 1)) + Address(iYIndex) }
+#   define aby() { iAddress = Address(readWord(iProgramCounter + 1)) + Address(YREG) }
 
 /**
  * $NN,X (wraps in zero page)
  */
-#   define zpx() { iAddress = Address (readByte(iProgramCounter + 1) + iXIndex) }
+#   define zpx() { iAddress = Address (readByte(iProgramCounter + 1) + XREG) }
 
 /**
  * $NN,Y (wraps in zero page)
  */
-#   define zpy() { iAddress = Address (readByte(iProgramCounter + 1) + iYIndex) }
+#   define zpy() { iAddress = Address (readByte(iProgramCounter + 1) + YREG) }
 
 /**
  * ($NN,X) (wraps in zero page)
  */
-#   define ix() { iAddress = (Address(readByte(iProgramCounter + 1)) + Address(iXIndex)) & 0xFF; iAddress = readWordZP(iAddress) }
+#   define ix() { iAddress = (Address(readByte(iProgramCounter + 1)) + Address(XREG)) & 0xFF; iAddress = readWordZP(iAddress) }
 
 /**
  * ($NN),Y
  */
-#define iy() { iAddress = Address(readByte(iProgramCounter + 1)); iAddress = Address(readWordZP(iAddress)) + Address(iYIndex); }
+#define iy() { iAddress = Address(readByte(iProgramCounter + 1)); iAddress = Address(readWordZP(iAddress)) + Address(YREG); }
 
 #   define begin() Interpreter: for { switch readByte(iProgramCounter)
 #   define done() }

@@ -52,10 +52,10 @@ func (cpu *MOS6502) Run() *MOS6502 {
     iProgramCounter := cpu.iProgramCounter
     iAccumulator := cpu.iAccumulator
     iStatus := cpu.iStatus
-    iXIndex := cpu.iXIndex
-    iYIndex := cpu.iYIndex
-    iStackPointer := cpu.iStackPointer
-
+    pinX()
+    pinY()
+    pinS()
+ 
     var iAddress Address // For address temporaries
     var iData    Byte    // For data temporaries
     begin() {
@@ -163,110 +163,110 @@ func (cpu *MOS6502) Run() *MOS6502 {
 
         // Load X
         handle(LDX_IM) {
-            load(im(), iXIndex)
-            updateNZ(iXIndex) 
+            load(im(), XREG)
+            updateNZ(XREG) 
             size(LDX_IM)
             dispatch()
         }
 
         handle(LDX_ZP) {
-            load(zp(), iXIndex)
-            updateNZ(iXIndex)
+            load(zp(), XREG)
+            updateNZ(XREG)
             size(LDX_ZP)
             dispatch()
         }
 
         handle(LDX_ZPY) {
-            load(zpy(), iXIndex)
-            updateNZ(iXIndex)
+            load(zpy(), XREG)
+            updateNZ(XREG)
             size(LDX_ZPY)
             dispatch()
         }
 
         handle(LDX_AB) {
-            load(ab(), iXIndex)
-            updateNZ(iXIndex)
+            load(ab(), XREG)
+            updateNZ(XREG)
             size(LDX_AB)
             dispatch()
         }
 
         handle(LDX_ABY) {
-            load(aby(), iXIndex)
-            updateNZ(iXIndex)
+            load(aby(), XREG)
+            updateNZ(XREG)
             size(LDX_ABY)
             dispatch()
         }
 
         // Store X
         handle(STX_ZP) {
-            store(zp(),  iXIndex)
+            store(zp(),  XREG)
             size(STX_ZP)
             dispatch()
         }
 
         handle(STX_ZPY) {
-            store(zpy(), iXIndex)
+            store(zpy(), XREG)
             size(STX_ZPY)
             dispatch()
         }
 
         handle(STX_AB) {
-            store(ab(),  iXIndex)
+            store(ab(),  XREG)
             size(STX_AB)
             dispatch()
         }
 
         // Load Y
         handle(LDY_IM) {
-            load(im(), iYIndex)
-            updateNZ(iYIndex)
+            load(im(), YREG)
+            updateNZ(YREG)
             size(LDY_IM)
             dispatch()
         }
 
         handle(LDY_ZP) {
-            load(zp(), iYIndex)
-            updateNZ(iYIndex)
+            load(zp(), YREG)
+            updateNZ(YREG)
             size(LDY_ZP)
             dispatch()
         }
 
         handle(LDY_ZPX) {
-            load(zpx(), iYIndex)
-            updateNZ(iYIndex)
+            load(zpx(), YREG)
+            updateNZ(YREG)
             size(LDY_ZPX)
             dispatch()
         }
 
         handle(LDY_AB) {
-            load(ab(), iYIndex)
-            updateNZ(iYIndex)
+            load(ab(), YREG)
+            updateNZ(YREG)
             size(LDY_AB)
             dispatch()
         }
 
         handle(LDY_ABX) {
-            load(abx(), iYIndex)
-            updateNZ(iYIndex)
+            load(abx(), YREG)
+            updateNZ(YREG)
             size(LDY_ABX)
             dispatch()
         }
 
         // Store Y
         handle(STY_ZP) {
-            store(zp(),  iYIndex)
+            store(zp(),  YREG)
             size(STY_ZP)
             dispatch()
         }
 
         handle(STY_ZPX) {
-            store(zpx(), iYIndex)
+            store(zpx(), YREG)
             size(STY_ZPX)
             dispatch()
         }
 
         handle(STY_AB) {
-            store(ab(),  iYIndex)
+            store(ab(),  YREG)
             size(STY_AB)
             dispatch()
         }
@@ -333,42 +333,42 @@ func (cpu *MOS6502) Run() *MOS6502 {
 
         handle(CPX_IM) {
             load(im(), iData)
-            cmpByte(iXIndex, iData)
+            cmpByte(XREG, iData)
             size(CPX_IM)
             dispatch()
         }
 
         handle(CPX_ZP) {
             load(zp(), iData)
-            cmpByte(iXIndex, iData)
+            cmpByte(XREG, iData)
             size(CPX_ZP)
             dispatch()
         }
 
         handle(CPX_AB) {
             load(ab(), iData)
-            cmpByte(iXIndex, iData)
+            cmpByte(XREG, iData)
             size(CPX_AB)
             dispatch()
         }
 
         handle(CPY_IM) {
             load(im(), iData)
-            cmpByte(iYIndex, iData)
+            cmpByte(YREG, iData)
             size(CPY_IM)
             dispatch()
         }
 
         handle(CPY_ZP) {
             load(zp(), iData)
-            cmpByte(iYIndex, iData)
+            cmpByte(YREG, iData)
             size(CPY_ZP)
             dispatch()
         }
 
         handle(CPY_AB) {
             load(ab(), iData)
-            cmpByte(iYIndex, iData)
+            cmpByte(YREG, iData)
             size(CPY_AB)
             dispatch()
         }	
@@ -496,28 +496,28 @@ func (cpu *MOS6502) Run() *MOS6502 {
 
         // Register transfer
         handle(TAX) {
-            iXIndex = iAccumulator
-            updateNZ(iXIndex)
+            XREG = iAccumulator
+            updateNZ(XREG)
             size(TAX)
             dispatch()
         }
 
         handle(TAY) {
-            iYIndex = iAccumulator
-            updateNZ(iYIndex);
+            YREG = iAccumulator
+            updateNZ(YREG);
             size(TAY)
             dispatch()
         }
 
         handle(TSX) {
-            iXIndex = iStackPointer
-            updateNZ(iXIndex)
+            XREG = SREG
+            updateNZ(XREG)
             size(TSX)
             dispatch()
         }
 
         handle(TXA) {
-            iAccumulator = iXIndex
+            iAccumulator = XREG
             updateNZ(iAccumulator)
             size(TXA)
             dispatch()
@@ -525,13 +525,13 @@ func (cpu *MOS6502) Run() *MOS6502 {
 
         // klausd tests: TXS does not update NZ
         handle(TXS) {
-            iStackPointer = iXIndex
+            SREG = XREG
             size(TXS)
             dispatch()
         }
 
         handle(TYA) {
-            iAccumulator = iYIndex
+            iAccumulator = YREG
             updateNZ(iAccumulator)
             size(TYA)
             dispatch()
@@ -570,15 +570,15 @@ func (cpu *MOS6502) Run() *MOS6502 {
 
         // Decrement
         handle(DEX) {
-            iXIndex--
-            updateNZ(iXIndex)
+            XREG--
+            updateNZ(XREG)
             size(DEX)
             dispatch()
         }
 
         handle(DEY) {
-            iYIndex--
-            updateNZ(iYIndex)
+            YREG--
+            updateNZ(YREG)
             size(DEY)
             dispatch()
         }
@@ -625,15 +625,15 @@ func (cpu *MOS6502) Run() *MOS6502 {
 
         // Increment
         handle(INX) {
-            iXIndex++
-            updateNZ(iXIndex)
+            XREG++
+            updateNZ(XREG)
             size(INX)
             dispatch()
         }
 
         handle(INY) {
-            iYIndex++
-            updateNZ(iYIndex)
+            YREG++
+            updateNZ(YREG)
             size(INY)
             dispatch()
         }
@@ -1305,9 +1305,9 @@ func (cpu *MOS6502) Run() *MOS6502 {
     cpu.iProgramCounter = iProgramCounter
     cpu.iAccumulator = iAccumulator
     cpu.iStatus = iStatus
-    cpu.iXIndex = iXIndex
-    cpu.iYIndex = iYIndex
-    cpu.iStackPointer = iStackPointer
+    unpinX()
+    unpinY()
+    unpinS()
     
     return cpu
 }
