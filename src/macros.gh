@@ -152,7 +152,7 @@
         iSum = addBCDWithCarry(iValue, iAccumulator, iStatus); \
     } else { \
         iSum = Word(iStatus & F_CARRY) + Word(iValue) + Word(iAccumulator); \
-    } \
+    }; \
     iRes := Byte(iSum); \
     iStatus &= F_CLR_NZCV; \
     if iRes == 0 { iStatus |= F_ZERO } else { iStatus |= (iRes & F_NEGATIVE) }; \
@@ -160,7 +160,7 @@
     if ((iValue & F_NEGATIVE) == (iAccumulator & F_NEGATIVE)) && \
        ((iValue & F_NEGATIVE) != (iRes & F_NEGATIVE)) { \
         iStatus |= F_OVERFLOW; \
-    } \
+    }; \
     iAccumulator = iRes; \
 }
 
@@ -170,7 +170,7 @@
         iDiff = subBCDWithCarry(iValue, iAccumulator, iStatus); \
     } else { \
         iDiff = Word(iAccumulator) - Word(iValue) - Word((^iStatus) & F_CARRY); \
-    } \
+    }; \
     iRes := Byte(iDiff); \
     iStatus &= F_CLR_NZCV; \
     if iRes == 0 { iStatus |= F_ZERO } else { iStatus |= (iRes & F_NEGATIVE) }; \
@@ -178,7 +178,7 @@
     if ((iValue & F_NEGATIVE) != (iAccumulator & F_NEGATIVE)) && \
        ((iAccumulator & F_NEGATIVE) != (iRes & F_NEGATIVE)) { \
         iStatus |= F_OVERFLOW; \
-    } \
+    }; \
     iAccumulator = iRes; \
 }
     

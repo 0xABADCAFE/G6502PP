@@ -1107,7 +1107,124 @@ func (cpu *MOS6502) Run() *MOS6502 {
             iStatus |= F_INTERRUPT
             dispatch()
         }
-        
+
+        // Addition
+        // A + M + C
+        handle(ADC_IM) {
+            load(im(), iData)
+            addByteWithCarry(iData)
+            size(ADC_IM)
+            dispatch()
+        }
+
+        handle(ADC_ZP) {
+            load(zp(), iData)
+            addByteWithCarry(iData)
+            size(ADC_ZP)
+            dispatch()
+        }
+
+        handle(ADC_ZPX) {
+            load(zpx(), iData)
+            addByteWithCarry(iData)
+            size(ADC_ZPX)
+            dispatch()
+        }
+
+        handle(ADC_AB) {
+            load(ab(), iData)
+            addByteWithCarry(iData)
+            size(ADC_AB)
+            dispatch()
+        }
+
+        handle(ADC_ABX) {
+            load(abx(), iData)
+            addByteWithCarry(iData)
+            size(ADC_ABX)
+            dispatch()
+        }
+
+        handle(ADC_ABY) {
+            load(aby(), iData)
+            addByteWithCarry(iData)
+            size(ADC_ABY)
+            dispatch()
+        }
+
+        handle(ADC_IX) {
+            load(ix(), iData)
+            addByteWithCarry(iData)
+            size(ADC_IX)
+            dispatch()
+        }
+
+        handle(ADC_IY) {
+            load(iy(), iData)
+            addByteWithCarry(iData)
+            size(ADC_IY)
+            dispatch()
+        }
+
+        // Subtract
+        // A - M - B => A + (255 - M) - (1 - C) => A + ~M + C
+        handle(SBC_IM) {
+            load(im(), iData)
+            subByteWithCarry(iData)
+            size(SBC_IM)
+            dispatch()
+        }
+
+        handle(SBC_ZP) {
+            load(zp(), iData)
+            subByteWithCarry(iData)
+            size(SBC_ZP)
+            dispatch()
+        }
+
+        handle(SBC_ZPX) {
+            load(zpx(), iData)
+            subByteWithCarry(iData)
+            size(SBC_ZPX)
+            dispatch()
+        }
+
+        handle(SBC_AB) {
+            load(ab(), iData)
+            subByteWithCarry(iData)
+            size(SBC_AB)
+            dispatch()
+        }
+
+        handle(SBC_ABX) {
+            load(abx(), iData)
+            subByteWithCarry(iData)
+            size(SBC_ABX)
+            dispatch()
+        }
+
+        handle(SBC_ABY) {
+            load(aby(), iData)
+            subByteWithCarry(iData)
+            size(SBC_ABY)
+            dispatch()
+        }
+
+        handle(SBC_IX) {
+            load(ix(), iData)
+            subByteWithCarry(iData)
+            size(SBC_IX)
+            dispatch()
+        }
+
+        handle(SBC_IY) {
+            load(iy(), iData)
+            subByteWithCarry(iData)
+            size(SBC_IY)
+            dispatch()
+        }
+
+/*        
 	    case 0x03: fallthrough
 	    case 0x13: fallthrough
 	    case 0x23: fallthrough
@@ -1175,7 +1292,7 @@ func (cpu *MOS6502) Run() *MOS6502 {
 	    case 0xDF: fallthrough
 	    case 0xEF: fallthrough
         case 0xFF: fallthrough
-
+*/
 
         illegal();
     }
