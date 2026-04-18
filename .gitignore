@@ -1,3 +1,4 @@
 bin/G65O2PP
-build/*
-
+bin/G65O2PP_pinhot
+bin/G65O2PP_pinall
+build/

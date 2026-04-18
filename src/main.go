@@ -24,7 +24,7 @@ func main() {
     {
     
         // Block of NOPS
-        for i := 0; i < BLOCK; i++ {
+        for i := range BLOCK {
             mem[BASE + i] = NOP
         }
         mem[BASE + BLOCK] = 0xFF // illegal    
