@@ -8,9 +8,9 @@
 #       define pinX() iXIndex := cpu.iXIndex
 #       define pinY() iYIndex := cpu.iYIndex
 #       define pinS() iStackPointer := cpu.iStackPointer
-#       define unpinX() cpu.iXIndex := iXIndex
-#       define unpinY() cpu.iYIndex := iYIndex
-#       define unpinS() cpu.iStackPointer := iStackPointer
+#       define unpinX() cpu.iXIndex = iXIndex
+#       define unpinY() cpu.iYIndex = iYIndex
+#       define unpinS() cpu.iStackPointer = iStackPointer
 #   else
 #       define XREG cpu.iXIndex
 #       define YREG cpu.iYIndex

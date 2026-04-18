@@ -31,7 +31,7 @@ func main() {
 
             
         tStart := time.Now()
-        for i := 0; i < LOOPS; i++ {
+        for range LOOPS {
             cpu.RunFrom(0x200)
         }
         tElapsed := time.Since(tStart)
@@ -65,7 +65,7 @@ func main() {
         copy(mem[:], payload)
         
         tStart := time.Now()
-        for i := 0; i < KLAUS_LOOPS; i++ {
+        for range KLAUS_LOOPS {
             cpu.RunFrom(KLAUS_START)
         }
         tElapsed := time.Since(tStart)
