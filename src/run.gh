@@ -32,11 +32,11 @@ func subBCDWithCarry(iValue Byte, iAccumulator Byte, iStatus Byte) Word {
     iDiffL := Word(iAccumulator & 0x0F) - Word(iValue & 0x0F) - Word((^iStatus) & F_CARRY)
     iDiffH := Word(iAccumulator & 0xF0) - Word(iValue & 0xF0)
 
-    if 0 != iDiffL & 0x10 {
+    if iDiffL & 0x10 != 0 {
         iDiffL -= 0x06
         iDiffH--
     }
-    if 0 != iDiffH & 0x0100 {
+    if iDiffH & 0x0100 != 0 {
         iDiffH -= 0x60
     }
     return (iDiffH & 0x1F0) | (iDiffL & 0x0F)
@@ -375,7 +375,7 @@ func (cpu *MOS6502) Run() *MOS6502 {
 
         // Conditional Branching
         handle(BCC) {
-            if 0 == iStatus & F_CARRY {
+            if iStatus & F_CARRY == 0 {
                 branch()
             } else {
                 size(BCC)
@@ -402,7 +402,7 @@ func (cpu *MOS6502) Run() *MOS6502 {
         }
 
         handle(BNE) {
-            if 0 == iStatus & F_ZERO {
+            if iStatus & F_ZERO == 0 {
                 branch()
             } else {
                 size(BNE)
@@ -420,7 +420,7 @@ func (cpu *MOS6502) Run() *MOS6502 {
         }
 
         handle(BPL) {
-            if 0 == iStatus & F_NEGATIVE {
+            if iStatus & F_NEGATIVE == 0 {
                 branch()
             } else {
                 size(BPL)
@@ -429,7 +429,7 @@ func (cpu *MOS6502) Run() *MOS6502 {
         }
 
         handle(BVC) {
-            if 0 == iStatus & F_OVERFLOW {
+            if iStatus & F_OVERFLOW == 0 {
                 branch()
             } else {
                 size(BVC)
@@ -888,7 +888,7 @@ func (cpu *MOS6502) Run() *MOS6502 {
         handle(JMP_IN) {
             // Emulate the 6502 indirect jump bug with respect to page boundaries.
             iAddress = readWord(iProgramCounter + 1)
-            if 0x00FF == (iAddress & 0x00FF) {
+            if (iAddress & 0x00FF) == 0x00FF {
                 iProgramCounter  = Address(readByte(iAddress))
                 iProgramCounter |= (Address(readByte(iAddress & 0xFF00)) << 8)
             } else {
@@ -1056,7 +1056,7 @@ func (cpu *MOS6502) Run() *MOS6502 {
             load(zp(), iData)
             iStatus &= F_CLR_NZV
             iStatus |= (iData & (F_NEGATIVE | F_OVERFLOW))
-            if 0 == iData & iAccumulator {
+            if iData & iAccumulator == 0 {
                 iStatus |= F_ZERO
             }            
             size(BIT_ZP)
@@ -1067,7 +1067,7 @@ func (cpu *MOS6502) Run() *MOS6502 {
             load(ab(), iData)
             iStatus &= F_CLR_NZV
             iStatus |= (iData & (F_NEGATIVE|F_OVERFLOW))
-            if 0 == iData & iAccumulator {
+            if iData & iAccumulator == 0 {
                 iStatus |= F_ZERO
             }
             size(BIT_AB)
